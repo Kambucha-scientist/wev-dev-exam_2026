@@ -2,7 +2,6 @@
 {% block content %}
 <h2>Список книг</h2>
 
-<!-- Форма поиска (без изменений) -->
 <div class="card mb-4">
     <div class="card-header">Поиск книг</div>
     <div class="card-body">
@@ -71,7 +70,6 @@
                             <strong>Рецензий:</strong> {{ item.reviews_count }}
                         </p>
                     </div>
-                    <!-- Блок кнопок прижат к низу, каждая кнопка одинаковой ширины -->
                     <div class="card-footer bg-transparent border-top-0 pt-0 pb-3">
                         <div class="d-grid gap-2 d-md-flex justify-content-md-stretch">
                             <a href="{{ url_for('book_detail', book_id=item.book.id) }}" class="btn btn-sm btn-outline-secondary flex-fill">

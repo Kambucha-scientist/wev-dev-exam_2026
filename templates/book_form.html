@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ title }}</h2>
+<form method="POST"  enctype="multipart/form-data" novalidate  style="margin-bottom: 15px;">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.title.label(class="form-label") }}
+        {{ form.title(class="form-control") }}
+    </div>
+    <div class="mb-3">
+        {{ form.description.label(class="form-label") }}
+        {{ form.description(class="form-control", rows=5, id="markdown-editor") }}
+        <small class="text-muted">Поддерживается Markdown</small>
+    </div>
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            {{ form.year.label(class="form-label") }}
+            {{ form.year(class="form-control") }}
+        </div>
+        <div class="col-md-3 mb-3">
+            {{ form.publisher.label(class="form-label") }}
+            {{ form.publisher(class="form-control") }}
+        </div>
+        <div class="col-md-3 mb-3">
+            {{ form.author.label(class="form-label") }}
+            {{ form.author(class="form-control") }}
+        </div>
+        <div class="col-md-3 mb-3">
+            {{ form.pages.label(class="form-label") }}
+            {{ form.pages(class="form-control") }}
+        </div>
+    </div>
+    <div class="mb-3">
+        {{ form.genres.label(class="form-label") }}
+        {{ form.genres(class="form-select", multiple="multiple", size=5) }}
+        <small class="text-muted">Зажмите ctrl, чтобы выбрать несколько жанров</small>
+    </div>
+    {% if not is_edit %}
+        <div class="mb-3">
+            {{ form.cover.label(class="form-label") }}
+            {{ form.cover(class="form-control") }}
+        </div>
+    {% else %}
+        <div class="alert alert-secondary">Обложка не редактируется</div>
+    {% endif %}
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">Отмена</a>
+</form>
+<script>
+    var easymde = new EasyMDE({ element: document.getElementById('markdown-editor') });
+</script>
+{% endblock %}

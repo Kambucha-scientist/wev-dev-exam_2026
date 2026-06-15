@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row g-4 align-stretch">
+   <div class="col-md-3 d-flex flex-column justify-content-center align-items-center">
+        {% if cover %}
+            <img src="{{ url_for('get_cover', filename=cover.filename) }}" class="img-fluid" alt="Обложка">
+        {% else %}
+            <div class="alert alert-secondary">Нет обложки</div>
+        {% endif %}
+    </div>
+    <div class="col-md-9">
+        <h2>{{ book.title }}</h2>
+        <p><strong>Автор:</strong> {{ book.author }}</p>
+        <p><strong>Год:</strong> {{ book.year }}</p>
+        <p><strong>Издательство:</strong> {{ book.publisher }}</p>
+        <p><strong>Страниц:</strong> {{ book.pages }}</p>
+        <p><strong>Жанры:</strong> {{ book.genres|map(attribute='name')|join(', ') }}</p>
+        <div class="mt-3">
+            <h5>Описание</h5>
+            <div>{{ book_description_html|safe }}</div>
+        </div>
+    </div>
+</div>
+
+<hr>
+<h4>Рецензии</h4>
+{% if reviews %}
+    {% for rev in reviews %}
+        <div class="card mb-2">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <strong>{{ rev.user.surname }} {{ rev.user.name }}</strong>
+                    <span class="rating-stars">Оценка: {{ rev.rating }}/5</span>
+                    <small>{{ rev.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                    {% if current_user.is_authenticated and current_user.role.name in ['admin', 'moderator'] %}
+                        <button type="button" class="btn btn-sm btn-outline-danger ms-2" data-bs-toggle="modal" data-bs-target="#deleteReviewModal{{ rev.id }}">
+                           <i class="fa-solid fa-trash-can"></i> Удалить
+                        </button>
+                    {% endif %}
+                </div>
+                <div class="mt-2">{{ rev.text_html|safe }}</div>
+            </div>
+        </div>
+        {% if current_user.is_authenticated and current_user.role.name in ['admin', 'moderator'] %}
+        <div class="modal fade" id="deleteReviewModal{{ rev.id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Удаление рецензии</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        Вы уверены, что хотите удалить рецензию пользователя <strong>{{ rev.user.surname }} {{ rev.user.name }}</strong>?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Нет</button>
+                        <form method="POST" action="{{ url_for('delete_review', review_id=rev.id) }}">
+                            <button type="submit" class="btn btn-danger">Да, удалить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+{% else %}
+    <p>Рецензий пока нет.</p>
+{% endif %}
+
+{% if current_user.is_authenticated and not user_review %}
+    <a href="{{ url_for('add_review', book_id=book.id) }}" class="btn btn-primary mt-3">Написать рецензию</a>
+{% elif user_review %}
+    <div class="alert alert-info mt-3">Вы уже оставили рецензию на эту книгу.</div>
+{% endif %}
+{% endblock %}
